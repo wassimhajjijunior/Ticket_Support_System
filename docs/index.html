@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ORBITAL — 7-Day DevOps Operation</title>
+<meta name="description" content="Mission telemetry for a 7-day DevOps operation: Docker, CI/CD, Terraform, Kubernetes, observability and GitOps — with live progress tracking." />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23050809'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%232de2c5' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='7' r='2.4' fill='%232de2c5'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="dot"></span>ORBITAL</div>
+    <div class="spacer"></div>
+    <div class="tb-stat opt"><b id="tb-days">1/7</b><span>days</span></div>
+    <div class="tb-stat opt"><b id="tb-steps">0/57</b><span>steps</span></div>
+    <div class="tb-stat"><b id="tb-pct">0%</b><span>complete</span></div>
+  </div>
+  <div class="tb-track"><div class="tb-fill" id="tb-fill"></div></div>
+</header>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker">
+          <span class="pill">OP. TICKET-SYSTEM</span>
+          <span class="pill">03 — 09 NOV 2026</span>
+          <span class="pill hot" id="countdown">T-MINUS —</span>
+        </div>
+
+        <h1 class="title">
+          Seven days<br>from code to<br><span class="accent">production</span><span class="caret" aria-hidden="true"></span>
+        </h1>
+
+        <p class="lede">
+          One Spring Boot API, one Next.js frontend, one PostgreSQL database.
+          <b>Seven days</b> to put them behind Docker, CI, Terraform, Kubernetes,
+          dashboards and GitOps. Every step is tracked — the constellation lights up
+          as you close them out.
+        </p>
+      </div>
+
+      <div class="scope">
+        <canvas id="graph" aria-label="Journey constellation: seven day nodes linked to the mission core"></canvas>
+        <div class="scope-hud">
+          <div class="row"><span>constellation</span><span><b id="hud-nodes">1</b>lit</span></div>
+          <div class="row"><span>uptime <b id="hud-clock">00:00:00</b></span><span>sys <b id="hud-sys">NOMINAL</b></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TELEMETRY ================= -->
+  <section class="telemetry" aria-label="Telemetry">
+    <div class="telemetry-in">
+      <div class="tm signal">
+        <div class="k">Overall</div>
+        <div class="v"><span id="tm-pct">0</span><small>%</small></div>
+        <div class="spark" id="spark-progress"></div>
+      </div>
+      <div class="tm">
+        <div class="k">Days</div>
+        <div class="v"><span id="tm-days">1</span><small>/7</small></div>
+        <div class="spark" id="spark-days"></div>
+      </div>
+      <div class="tm">
+        <div class="k">Steps</div>
+        <div class="v"><span id="tm-steps">0</span><small>/57</small></div>
+        <div class="spark" id="spark-steps"></div>
+      </div>
+      <div class="tm">
+        <div class="k">T-Minus</div>
+        <div class="v"><span id="tm-clock">—</span></div>
+        <div class="dmeta"><span>deadline</span><span>09 NOV 23:59</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DO THIS NOW ================= -->
+  <section class="section wrap" id="now-section">
+    <div class="sec-head">
+      <span class="sec-idx">01 / NEXT</span>
+      <h2>Do this now</h2>
+      <span class="note">the single next unchecked step</span>
+    </div>
+    <div class="now">
+      <div class="now-tag">▶ act</div>
+      <div class="now-body">
+        <div class="k" id="now-day">—</div>
+        <div class="v" id="now-step">—</div>
+        <div class="d" id="now-why">—</div>
+      </div>
+      <button class="now-go" id="now-go" type="button">jump →</button>
+    </div>
+  </section>
+
+  <!-- ================= TRAJECTORY ================= -->
+  <section class="section wrap" id="trajectory">
+    <div class="sec-head">
+      <span class="sec-idx">02 / TRAJECTORY</span>
+      <h2>Are you on pace</h2>
+      <span class="note" id="traj-note">—</span>
+    </div>
+    <div class="chart">
+      <div class="chart-hud">
+        <span><i class="lg actual"></i>actual progress</span>
+        <span><i class="lg ideal"></i>even pace (1 day = 1/7)</span>
+      </div>
+      <svg id="traj" viewBox="0 0 640 210" role="img" aria-label="Cumulative progress versus an even pace"></svg>
+    </div>
+  </section>
+
+  <!-- ================= TIMELINE ================= -->
+  <section class="section wrap" id="plan">
+    <div class="sec-head">
+      <span class="sec-idx">03 / SEQUENCE</span>
+      <h2>Mission sequence</h2>
+      <span class="note">7 days · <span id="total-steps">57</span> steps</span>
+    </div>
+    <div class="timeline" id="timeline">
+      <div class="tl-line" aria-hidden="true"></div>
+      <div class="tl-fill" id="tl-fill" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- ================= CUT MATRIX ================= -->
+  <section class="section wrap" id="cut">
+    <div class="sec-head">
+      <span class="sec-idx">04 / TRIAGE</span>
+      <h2>If you fall behind</h2>
+      <span class="note">cut in this order</span>
+    </div>
+    <div class="matrix" id="matrix"></div>
+  </section>
+
+  <!-- ================= CRITERIA ================= -->
+  <section class="section wrap" id="criteria">
+    <div class="sec-head">
+      <span class="sec-idx">05 / DONE</span>
+      <h2>Success criteria</h2>
+      <span class="note"><span id="crit-met">3</span>/12 met</span>
+    </div>
+    <div class="crit" id="crit"></div>
+  </section>
+
+  <!-- ================= RESOURCES ================= -->
+  <section class="section wrap" id="resources">
+    <div class="sec-head">
+      <span class="sec-idx">06 / STUDY</span>
+      <h2>What to read and watch</h2>
+      <span class="note">read before you type</span>
+    </div>
+    <div class="res-wrap">
+      <table class="res">
+        <thead><tr><th>topic</th><th>doc</th><th>search</th></tr></thead>
+        <tbody id="res-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= LOG ================= -->
+  <section class="section wrap" id="log">
+    <div class="sec-head">
+      <span class="sec-idx">07 / LOG</span>
+      <h2>Daily log</h2>
+      <span class="note">one file per day in docs/daily/</span>
+    </div>
+    <div class="cmd">
+      <button class="copy" type="button">copy</button>
+      <pre><code id="log-template"># Day N — &lt;date&gt; — &lt;theme&gt;
+
+## Done
+-
+
+## Verified
+- &lt;command&gt; -&gt; &lt;observed result&gt;
+
+## Broke / fixed
+- Symptom:
+- Root cause:
+- Fix:
+- How I found it:
+
+## Learned in my own words
+
+
+## Next
+-</code></pre>
+    </div>
+  </section>
+</main>
+
+<footer class="footer wrap">
+  <div class="foot-in">
+    <div>
+      <div class="mono-label">ORBITAL · OP. TICKET-SYSTEM · NOV 2026</div>
+      <div class="saved" id="saved" style="margin-top:6px">state persisted locally</div>
+    </div>
+    <button class="reset" id="reset" type="button">reset state</button>
+  </div>
+</footer>
+
+<noscript>
+  <div class="wrap" style="padding:24px 0">
+    <div class="alert"><span class="k">JS disabled</span>
+      The sequence and tracking need JavaScript. The source document is <code>docs/ROADMAP.md</code>.</div>
+  </div>
+</noscript>
+
+<script src="plan-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

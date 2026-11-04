@@ -1,0 +1,43 @@
+# --- Build output ---
+app/target/
+web/.next/
+web/out/
+web/next-env.d.ts
+
+# --- Dependencies ---
+web/node_modules/
+**/node_modules/
+
+# --- Local archived git history (pre-monorepo repos) ---
+_archive/
+
+# --- Secrets / local env ---
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# --- Runtime artifacts ---
+app/uploads.profile-images/
+app/*.log
+logs/
+*.log
+
+# --- Terraform ---
+terraform/**/.terraform/
+terraform/**/*.tfstate
+terraform/**/*.tfstate.*
+terraform/**/.terraform.lock.hcl
+.terraform/
+terraform.tfvars
+*.auto.tfvars
+
+# --- Local k8s secrets ---
+k8s/**/secrets.yaml

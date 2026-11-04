@@ -1,0 +1,104 @@
+# ---------------------------------------------------------------------------
+# Relay — full stack: PostgreSQL + Spring Boot API + Next.js web
+#
+#   docker compose -f docker/docker-compose.yml up -d --build
+#   open http://localhost:3000      (admin / admin123 on the dev profile)
+#
+# Values come from docker/.env when present (copy docker/.env.example).
+# ---------------------------------------------------------------------------
+name: relay
+
+services:
+
+  # ---------------------------------------------------------------- database
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ticketsupport}
+      POSTGRES_USER: ${POSTGRES_USER:-tickets}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tickets}
+    ports:
+      # 55432 on purpose: a native PostgreSQL often owns 5432/5433 on the host.
+      # Inside the network the service is always db:5432.
+      - "${DB_HOST_PORT:-55432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tickets} -d ${POSTGRES_DB:-ticketsupport}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # --------------------------------------------------------------------- api
+  api:
+    build:
+      context: ../app
+      dockerfile: ../docker/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      # container-to-container: always db:5432, never the published host port
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-ticketsupport}
+      DB_USERNAME: ${POSTGRES_USER:-tickets}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-tickets}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+      CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-3000}
+      # dev seeds admin/agent1/agent2 + the Platform project.
+      # For a real deployment set SPRING_PROFILES_ACTIVE=prod and provide real secrets.
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-admin123}
+      SEED_AGENT_PASSWORD: ${SEED_AGENT_PASSWORD:-agent123}
+      SQL_LOG_LEVEL: ${SQL_LOG_LEVEL:-WARN}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # --------------------------------------------------------------------- web
+  web:
+    build:
+      context: ../web
+      dockerfile: ../docker/Dockerfile.web
+      args:
+        # baked into the rewrite at build time — must be the internal service name
+        API_ORIGIN: http://api:8080
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/login > /dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # ------------------------------------------------------------ db inspector
+  # optional: docker compose -f docker/docker-compose.yml --profile tools up -d
+  adminer:
+    image: adminer:4
+    restart: unless-stopped
+    profiles: ["tools"]
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

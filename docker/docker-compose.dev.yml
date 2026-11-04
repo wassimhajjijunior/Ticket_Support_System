@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ticketsupport
+      POSTGRES_USER: tickets
+      POSTGRES_PASSWORD: tickets
+    # Host port 55432: this machine's native PostgreSQL owns 5432 AND 5433 on IPv4,
+    # so publishing on either silently routes the app to the wrong server.
+    # Inside the compose network the service is still db:5432.
+    ports: ["${DB_HOST_PORT:-55432}:5432"]
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickets -d ticketsupport"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  dbdata:

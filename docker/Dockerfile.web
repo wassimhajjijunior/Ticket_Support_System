@@ -1,0 +1,51 @@
+# syntax=docker/dockerfile:1.7
+# ---------------------------------------------------------------------------
+# Next.js web — deps / build / standalone runtime, non-root
+# Build context: web/    (see docker/docker-compose.yml)
+# ---------------------------------------------------------------------------
+
+# ---------- 1. deps ----------
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
+# ---------- 2. build ----------
+FROM node:22-alpine AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# next.config rewrites are compiled into routes-manifest.json at BUILD time,
+# so the API host must be known here — not at container start.
+ARG API_ORIGIN=http://api:8080
+ENV API_ORIGIN=$API_ORIGIN
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# ---------- 3. runtime ----------
+FROM node:22-alpine AS runtime
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+
+RUN addgroup -g 1001 -S nodejs && adduser -S -u 1001 -G nodejs nextjs
+
+# standalone output ships its own server.js but NOT static assets or public/
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
+
+USER nextjs
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:3000/login > /dev/null 2>&1 || exit 1
+
+CMD ["node", "server.js"]

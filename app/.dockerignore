@@ -1,0 +1,31 @@
+# build output
+target/
+
+# never ship git history or the archived pre-monorepo repos
+.git
+.gitignore
+_archive
+
+# wrapper jar is re-downloaded; keeping it out keeps the context small
+.mvn/wrapper/maven-wrapper.jar
+
+# local env / secrets
+.env
+.env.*
+!.env.example
+
+# logs and runtime junk
+*.log
+uploads.profile-images/
+HELP.md
+README.md
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.factorypath
+.settings/
+.qodo/

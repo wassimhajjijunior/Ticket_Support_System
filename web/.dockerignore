@@ -1,0 +1,33 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# build output
+.next
+out
+build
+
+# local env — never bake secrets into an image
+.env
+.env.*
+!.env.example
+
+# repo / tooling noise
+.git
+.gitignore
+.github
+*.md
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# tests / coverage
+coverage
+playwright-report
+test-results
