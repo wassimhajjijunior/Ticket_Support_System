@@ -255,6 +255,36 @@ Blocked: none.
 
 Next: book chapter 02 (CI/CD) after Day 3; phase-2 frontend wiring still pending.
 
+## 2026-11-04 — Single-repo migration + phase-2 frontend
+
+Done:
+- **Monorepo committed and pushed.** `Stage1` now tracks the whole tree instead of two broken gitlinks:
+  `git rm --cached support-tickets ticket_support` → 189 files committed → `7fb833d` pushed to
+  `github.com/wassimhajjijunior/Stage1`. Local and remote are in sync, working tree clean.
+  Guards run before commit: no `.env` staged, no file > 10 MB, `_archive/` ignored.
+- **Phase-2 frontend wired to the API** (from the design-system kit):
+  `AllTickets` queue (search, status/priority filters, create modal), new `AllTickets/[id]` detail
+  route (status, assign, edit, delete, comment thread), `Clients`, `Agents` (real `/user/agents` with
+  workload — the 4 hardcoded people are gone), `Settings` (`/user/me` + `PUT /user/{id}`).
+  New components: `components/tickets/*`, `components/people/*`, `components/settings/*`.
+
+Verified:
+- `npx tsc --noEmit` → 0 · `npm run lint` → 0 · `npm run build` → exit 0, 9 routes incl. `ƒ /AllTickets/[id]`.
+- Auth gate: `GET /` without a cookie → **307** `/login?from=%2F`.
+- All pages authenticated → **200** (`/`, `/AllTickets`, `/AllTickets/1`, `/Clients`, `/Agents`, `/Settings`).
+- Live API round trip against the containerised backend:
+  `POST /ticket/create` → **201** (id 1, `OPEN`, priority normalised `URGENT`, auto-assigned `agent1`,
+  project `Platform`) · `GET details` **200** · `POST comment` **201** · `PATCH status` **200** → `EXECUTED`
+  · `GET comments` 1 item by `admin` · `GET allTickets` 1 ticket.
+
+Not verified: the UI was not driven in a real browser this round — the Playwright MCP detached from the
+session, so pages were verified over HTTP (status + SSR shell + the API calls they depend on) rather than
+by clicking. Interaction-level proof still owed.
+
+Blocked: none.
+
+Next: Day 3 CI/CD, then a browser pass to confirm the interactions.
+
 ## Failed approaches
 
 (none yet)
