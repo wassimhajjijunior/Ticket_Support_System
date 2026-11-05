@@ -1,0 +1,12 @@
+# Keep scripts and infrastructure files consistent across Windows and Linux runners.
+**/mvnw text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.tf text eol=lf
+*.tfvars text eol=lf
+Dockerfile* text eol=lf
+
+# Windows launchers keep their native line endings.
+*.cmd text eol=crlf
+*.bat text eol=crlf

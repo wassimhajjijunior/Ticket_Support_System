@@ -1,0 +1,47 @@
+# Keeps dependencies and base images current without manual chasing.
+# Minor and patch updates are grouped so you get one PR per ecosystem, not ten.
+version: 2
+
+updates:
+  # Spring Boot / Maven
+  - package-ecosystem: maven
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      maven-minor:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+
+  # Next.js / React / tooling
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+
+  # Base images referenced in the Dockerfiles
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+
+  # The actions used by ci.yml / cd.yml
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ['*']
