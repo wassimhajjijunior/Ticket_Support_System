@@ -285,6 +285,34 @@ Blocked: none.
 
 Next: Day 3 CI/CD, then a browser pass to confirm the interactions.
 
+## 2026-11-05 — End-to-end verification + README
+
+Done:
+- `README.md` — professional project documentation: architecture diagram, quick start, demo accounts,
+  API table, configuration reference, pipeline description, security notes and an honest roadmap.
+- Root `.gitattributes` (LF for scripts/infra) and `app/mvnw` set to `100755`.
+
+Verified:
+- Backend: `./mvnw -B -ntp clean verify` → **BUILD SUCCESS**, surefire 4 + failsafe 30, 0 failures.
+  Note: a plain `verify` failed earlier because the IDE's Java language server had written
+  error-marked classes into `target/classes` (Lombok not processed by JDT). `clean` fixes it; CI is
+  unaffected because it always starts from a fresh checkout.
+- Frontend: `tsc --noEmit` 0 · `npm run lint` 0 · `npm run build` exit 0 (9 routes, incl. `/[id]`).
+- Docker stack: `db` + `api` healthy, API `/actuator/health` → 200.
+- Browser, real Chrome over CDP against the live stack:
+  - `/` unauthenticated → redirects to `/login?from=%2F`
+  - login `admin`/`admin123` → 200
+  - `/AllTickets` shows the real ticket; search + status filter present
+  - `/AllTickets/1` shows title, `EXECUTED` status, the comment, and both controls
+  - status select `EXECUTED → OPEN → EXECUTED` persisted through `PATCH /ticket/1/status`
+  - assignee select `agent1 → unassigned → agent1` persisted through `PATCH /ticket/1/assign`
+  - `/Clients`, `/Agents`, `/Settings` all render real data; zero console errors
+  - selects are named by `<label htmlFor>` (Status / Assignee) — no a11y gap
+
+Blocked: none.
+
+Next: push → first hosted CI/CD run.
+
 ## Failed approaches
 
 (none yet)
