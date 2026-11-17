@@ -3,8 +3,8 @@
 A full-stack support desk: customers raise tickets, agents are assigned work, and every ticket moves
 through a defined lifecycle. Spring Boot API, PostgreSQL, Next.js front end, containerised end to end.
 
-[![CI](https://github.com/wassimhajjijunior/Stage1/actions/workflows/ci.yml/badge.svg)](https://github.com/wassimhajjijunior/Stage1/actions/workflows/ci.yml)
-[![CD](https://github.com/wassimhajjijunior/Stage1/actions/workflows/cd.yml/badge.svg)](https://github.com/wassimhajjijunior/Stage1/actions/workflows/cd.yml)
+[![CI](https://github.com/wassimhajjijunior/Ticket_Support_System/actions/workflows/ci.yml/badge.svg)](https://github.com/wassimhajjijunior/Ticket_Support_System/actions/workflows/ci.yml)
+[![CD](https://github.com/wassimhajjijunior/Ticket_Support_System/actions/workflows/cd.yml/badge.svg)](https://github.com/wassimhajjijunior/Ticket_Support_System/actions/workflows/cd.yml)
 
 ---
 
@@ -77,8 +77,8 @@ a Next.js rewrite proxies `/api/*`, and in a cluster the ingress owns that path.
 Requires Docker Desktop. Nothing else — no JDK, no Node, no local database.
 
 ```bash
-git clone https://github.com/wassimhajjijunior/Stage1.git
-cd Stage1
+git clone https://github.com/wassimhajjijunior/Ticket_Support_System.git
+cd Ticket_Support_System
 
 # optional: copy and edit ports / credentials
 cp docker/.env.example docker/.env
