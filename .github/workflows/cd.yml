@@ -13,6 +13,11 @@ name: CD
 on:
   push:
     branches: [main]
+    # Documentation changes should not rebuild or republish images.
+    paths-ignore:
+      - 'docs/**'
+      - 'book/**'
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
