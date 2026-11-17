@@ -13,3 +13,11 @@
 #   ACTION: revisit when Spring Boot 4.x is adopted.
 CVE-2026-47884
 CVE-2026-47890
+
+# tomcat-embed-core 10.1.56
+#   Advisory lists 10.1.58 as the fix, but 10.1.58 / 11.0.25 are not published
+#   to Maven Central yet — 10.1.56 is the newest resolvable artefact for the
+#   Spring Boot 3.5 line. Trivy's `ignore-unfixed` does not suppress this because
+#   a fix version exists in the advisory database, just not in the repository.
+#   ACTION: bump <tomcat.version> as soon as 10.1.58 resolves, then delete this line.
+CVE-2026-65182
