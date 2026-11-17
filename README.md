@@ -227,6 +227,20 @@ Images: `ghcr.io/wassimhajjijunior/relay-api`, `ghcr.io/wassimhajjijunior/relay-
 Known gaps, stated plainly: no refresh-token rotation, no rate limiting, and the browser token currently
 lives in `localStorage` rather than an `HttpOnly` cookie.
 
+### Dependency security backlog
+
+Trivy runs on both images on every merge. It lists all `HIGH`/`CRITICAL` findings and gates on `CRITICAL`.
+At the time of writing the backlog is **3 CRITICAL (api) + 1 CRITICAL (web)**, so the gate is set to
+**advisory** (`continue-on-error`) until those are resolvable — the step still reports and shows red in
+the run, but does not block publishing.
+
+Already remediated: Spring Boot 3.5.3 → **3.5.14**, Tomcat CVE-2026-41293 and CVE-2026-55276,
+Next.js 15.3.5 → **15.5.24** (pre-auth RCE CVE-2025-55182 and later).
+
+Two CVEs are suppressed in [`.trivyignore`](.trivyignore) with dated reasons:
+`CVE-2026-47884` / `CVE-2026-47890` (spring-webmvc 6.2.x — fixed only in 7.x) and
+`CVE-2026-65182` (Tomcat 10.1.58, not yet published to Maven Central).
+
 ---
 
 ## Documentation
