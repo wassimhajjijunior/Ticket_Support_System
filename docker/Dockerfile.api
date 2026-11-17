@@ -8,18 +8,18 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /build
 
-# wrapper first so the dependency layer is cached independently of src changes
-COPY mvnw pom.xml ./
-COPY .mvn .mvn
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
+# The base image already ships Maven, so we call `mvn` directly instead of the
+# wrapper. `./mvnw` would download its own Maven distribution on every cold
+# build — an unnecessary network dependency that has already failed CI once.
+COPY pom.xml ./
 
 # warm the Maven cache; the cache mount survives rebuilds
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B -ntp -q dependency:go-offline
+    mvn -B -ntp -q dependency:go-offline
 
 COPY src ./src
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B -ntp -DskipTests package
+    mvn -B -ntp -DskipTests package
 
 # Spring Boot 3.3+ uses the `tools` jarmode (the old `layertools` is gone)
 RUN java -Djarmode=tools -jar target/*.jar extract --layers --destination /extracted
