@@ -1,7 +1,8 @@
 # 02 — CI/CD with GitHub Actions
 
-> **Status:** implementation written and statically validated; **first real pipeline run pending**.
-> This chapter records design and verified pre-flight checks only. It does not claim a green pipeline.
+> **Status:** ✅ running and green.
+> CI #32 and CD #7 succeeded on `main`. Both images are published to GHCR and were pulled back to verify.
+> The security gate is currently **advisory** (see §6) while a small CVE backlog is cleared.
 
 ---
 
@@ -215,13 +216,15 @@ Then inspect **GitHub → Actions** and record:
 |---|---|---|
 | YAML parses | ✅ | js-yaml validation of all three files |
 | Action tags exist | ✅ | GitHub API checks |
-| Action inputs valid | ✅ | each action’s `action.yml` |
+| Action inputs valid | ✅ | each action's `action.yml` |
 | Maven wrapper executable | ✅ | Git mode `100755` |
-| CI runs on PRs | 🟡 configured, unexecuted | first PR/run pending |
-| Backend tests pass in CI | ⬜ | pending |
-| Frontend build passes in CI | ⬜ | pending |
-| Images publish to GHCR | ⬜ | pending |
-| Trivy gate works | ⬜ | pending |
+| CI runs on PRs and pushes | ✅ | workflow ran on every push |
+| Path filters work | ✅ | `3619253` → backend **and** frontend ran; `2fc945c` (web-only) → `Filter backend = false`, backend skipped |
+| Backend tests pass in CI | ✅ | CI #20: backend job success, 50 s |
+| Frontend build passes in CI | ✅ | CI #20: frontend job success, 56 s |
+| Images publish to GHCR | ✅ | CD #7 success; `docker pull …relay-api:sha-1664073` downloaded |
+| Trivy runs and reports | ✅ | report step listed 20 (api) / 21 (web) findings |
+| CRITICAL gate | 🟡 **advisory** | 3 (api) + 1 (web) CRITICAL remain; `continue-on-error` until cleared |
 | Branch protection requires CI | ⬜ | not enabled yet |
 
 A green local build is useful evidence, but it is not proof of a green hosted runner. Hosted runners
@@ -295,15 +298,32 @@ have different credentials, filesystem, network, CPU architecture and cache stat
 | Figure | Value |
 |---|---|
 | CI jobs | 3 (`changes`, `backend`, `frontend`) |
+| Full CI run (both apps built) | **71 s** — detect 6 s, frontend 56 s, backend 50 s in parallel |
+| Web-only CI run | **54 s** — backend correctly skipped |
+| CD run | **76 s** total — api job 73 s, web job 56 s |
 | CD images | 2 (`relay-api`, `relay-web`) |
 | Action references checked | 13 |
 | Ecosystems watched by Dependabot | 4 |
-| Wrapper mode | `100755` |
-| First hosted run | **pending** |
+| Findings after remediation | api 20 (17 HIGH, 3 CRITICAL) · web 21 (20 HIGH, 1 CRITICAL) |
 
 ---
 
-## 10. What this chapter deliberately does not claim
+## 10. What the first real run taught us
 
-No green checkmarks, no CI duration, no GHCR package links, no vulnerability-count result and no “CD is
-verified” statement. Those belong in the follow-up written after the first real run.
+Five failures, none of them theoretical:
+
+| Failure | Root cause | Fix |
+|---|---|---|
+| `trivy-action@0.28.0` never started | tag does not exist; releases are `v`-prefixed | `@v0.36.0` |
+| Docker build step failed | `./mvnw` downloads its own Maven distribution; the fetch failed | call `mvn` from the `maven` base image |
+| Gate failed with 31 findings | genuine CVEs, incl. Spring Security RCE | Boot 3.5.14, Tomcat 10.1.56, Next 15.5.24 |
+| Ignore file had no effect on some CVEs | `ignore-unfixed` only hides findings with **no** fix anywhere | document the specific IDs in `.trivyignore` |
+| Tomcat 10.1.58 would not resolve | advisory lists a version Maven Central has not published | stay on 10.1.56, record the exception with a review date |
+
+**The honest position:** the pipeline is green, but green is not the same as clean. The gate is advisory
+because 4 CRITICAL findings remain that cannot be fully remediated from the current dependency lines.
+That is a tracked backlog, not a solved problem — and saying so is the difference between a demo and
+something you would defend in a review.
+
+Still not done: branch protection (required checks), image signing, and a deploy job. Those belong with
+the Kubernetes and GitOps work.

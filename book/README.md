@@ -33,7 +33,7 @@ Each chapter ends with **Numbers to remember** — the handful of figures you sh
 | # | Chapter | Status |
 |---|---|---|
 | 01 | Docker & Compose — packaging the API, the web app and the database | ✅ written & verified |
-| 02 | CI/CD — GitHub Actions, Trivy, GHCR | 🟡 written; first hosted run pending |
+| 02 | CI/CD — GitHub Actions, Trivy, GHCR | ✅ written & verified (gate advisory) |
 | 03 | Terraform + LocalStack — infrastructure as code | ⬜ |
 | 04 | Kubernetes & Helm — running it properly | ⬜ |
 | 05 | Observability — metrics, logs, SLOs, alerting | ⬜ |
