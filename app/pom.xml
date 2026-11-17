@@ -28,6 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<!-- Overrides the version managed by Spring Boot 3.5.14 to clear
+		     CVE-2026-41293 (HTTP/2 request smuggling), fixed in 10.1.55. -->
+		<tomcat.version>10.1.55</tomcat.version>
 	</properties>
 	<dependencies>
 		<dependency>

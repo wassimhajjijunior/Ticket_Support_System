@@ -1,0 +1,14 @@
+# Trivy suppressions — each entry needs a reason and a review date.
+#
+# We still fail the pipeline on unfixed CRITICAL/HIGH findings. Entries here are
+# explicitly accepted risks, not a way to silence the scanner.
+#
+# Review before 2027-01-31.
+
+# spring-webmvc 6.2.x (shipped by Spring Boot 3.5.14)
+#   Trivy lists 7.0.9 as the only fixed version — there is no 6.2.x fix, so this
+#   cannot be cleared without a Spring Boot 4 major upgrade.
+#   Exposure here is limited: the app serves JSON APIs only, no JSP/EL views, and
+#   the endpoint is not internet-facing in the current deployment.
+#   ACTION: revisit when Spring Boot 4.x is adopted.
+CVE-2026-47884
