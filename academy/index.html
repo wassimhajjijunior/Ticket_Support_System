@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevOps Academy  -  hands-on workshop program</title>
+  <meta name="description" content="A multi-session DevOps curriculum: one concept per workshop, each with a simulation, real code from the project, and a lab you run yourself." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>DevOps Academy</span>
+    </a>
+    <nav class="top-nav" aria-label="Sections">
+      <a href="#/" data-nav="home">Program</a>
+      <a href="#/s0" data-nav="s0">01 Orientation</a>
+      <a href="#/s1" data-nav="s1">02 Git</a>
+      <a href="#/s2" data-nav="s2">03 Docker</a>
+      <a href="#/s3" data-nav="s3">04 CI</a>
+    </nav>
+    <button class="theme-note" id="progress-reset" type="button" title="Clear lab progress">reset labs</button>
+  </header>
+
+  <main id="app"></main>
+
+  <footer class="foot">
+    <span>Built from a real repository  -  Spring Boot  /  Next.js  /  PostgreSQL  /  Docker  /  GitHub Actions</span>
+    <span id="foot-progress">0 labs done</span>
+  </footer>
+
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

@@ -18,6 +18,7 @@ on:
       - 'docs/**'
       - 'book/**'
       - 'workshop/**'
+      - 'academy/**'
       - '**/*.md'
   workflow_dispatch:
 
