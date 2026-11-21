@@ -17,6 +17,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'book/**'
+      - 'workshop/**'
       - '**/*.md'
   workflow_dispatch:
 

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From commit to production — DevOps workshop</title>
+  <meta name="description" content="A DevOps workshop: why delivery is a rate, the nine stages of a pipeline, and the judgement behind each gate." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="stage" aria-hidden="true"></canvas>
+
+  <header class="hud">
+    <div class="hud-left">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="hud-title">DEVOPS · SUPCOM</span>
+    </div>
+    <div class="hud-right">
+      <span id="counter" class="counter">01 / 17</span>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+  </header>
+
+  <nav id="rail" aria-label="Slides"></nav>
+
+  <main id="deck" tabindex="-1"></main>
+
+  <footer class="foot">
+    <span id="foot-hint">← → navigate · click a node to jump</span>
+    <span id="reduced-badge" hidden>reduced motion</span>
+  </footer>
+
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
+  <script src="content.js"></script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
