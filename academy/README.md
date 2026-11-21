@@ -1,9 +1,7 @@
-# DevOps Academy — hands-on workshop program
+# DevOps Academy — a 3D, slide-by-slide workshop program
 
-A light-mode curriculum site. Each *session* is one workshop: **concept → simulation → lab → checkpoint**.
-Sessions are designed to be delivered on separate days; each one assumes the previous.
-
-The dark 3D deck in `../workshop/` is the **overview/pitch** (60–90 min). This folder is the **program**.
+Eleven sessions, 61 slides, four 3D simulations. Light mode, no build step, works offline.
+**Language-agnostic on purpose**: "your build tool", not a specific one.
 
 ---
 
@@ -14,87 +12,116 @@ cd C:\Users\LENOVO\Desktop\HelloWorld\Stage\Stage1
 python -m http.server 4173 --directory academy
 ```
 
-Open **http://localhost:4173**. No build step, no dependencies, works offline.
+Open **http://localhost:4173**. Three.js is vendored (`academy/vendor/`), so a hall without wifi still runs it.
 
 ---
 
-## The program
+## Controls
 
-| Day | Session | Duration | Needs |
-|---|---|---|---|
-| 1 | 00 Orientation — the map | 60 min | nothing |
-| 2 | 01 Git — commit-to-production graph | 75 min | a terminal |
-| 3–4 | 02 Docker — image, layers, Dockerfile, Compose | 120 min | Docker |
-| 5 | 03 CI — the pipeline stage by stage | 90 min | a GitHub repo |
-| 6 | 04 Registry & releases | 60 min | after CI |
-| 7 | 05 Security — scanning the artefact | 75 min | after registry |
-| 8–9 | 06 Terraform | 120 min | AWS or LocalStack |
-| 10–11 | 07 Kubernetes | 120 min | kind |
-| 12 | 08 Observability | 90 min | after Kubernetes |
-| 13 | 09 GitOps | 90 min | after Kubernetes |
-| 14 | 10 Capstone | half day | everything |
-
-That is roughly **14 half-days**. If you only have one day, run 00, 01, 03 and the close of 10.
-
----
-
-## Interactive simulations (4)
-
-| Session | Simulation | What the room does |
-|---|---|---|
-| 01 Git | two-lane commit graph | commits locally, pushes, opens a PR, merges — sees which graph changed |
-| 02 Docker | layer stack | builds, changes `src/`, watches exactly the later layers invalidate |
-| 03 CI | 3D pipeline | runs stages, injects a failing test, watches the rest get skipped |
-| 02 Compose | service order | starts db → api → web and sees health gates decide the order |
-
-Two more are wired and ready to mount if you add `sim: "compose"` to a session in `content.js`.
+| Action | Effect |
+|---|---|
+| `->` / `<-` / `PageUp` / `PageDown` | next / previous slide |
+| `Home` / `End` | first / last slide |
+| `Esc` | back to the program |
+| Dots at the bottom | jump inside the current session |
+| `3D` button | disable the scene (plain slides, still readable) |
 
 ---
 
 ## Structure
 
+Each session is a sequence of slides. Every slide is one idea, and each one can carry:
+a short lede, a bullet set, a stat row, a quote, a code block, a 3D scene, or a lab.
+
+```
+program
+ └─ session (11)
+     └─ slide (4-8 each)
+         ├─ concept   (text you should be able to redraw)
+         ├─ sim       (a 3D model you drive)
+         └─ lab       (commands + expected output + checkpoint)
+```
+
 | File | Purpose |
 |---|---|
-| `index.html` | shell (top bar, app mount, footer) |
-| `content.js` | **all session content** — concepts, labs, code snippets, diagrams |
-| `app.js` | router, renderer, the four simulations, lab progress |
-| `styles.css` | light design tokens at the top |
-
-**To change a session, edit `content.js` only.** Each entry supports:
-
-```
-id, n, title, duration, level, short
-goal
-concept: { intro, points[[key, text]], diagram }
-sim: "git" | "docker" | "compose" | "pipeline" | null
-lab: [{ title, body, cmd?, expect?, checkpoint? }]
-real: { path, lang, snippet }        // actual code from this repository
-```
+| `index.html` | shell: canvas, bar, slide mount, pager |
+| `content.js` | **all slide content** — edit this to change the program |
+| `app.js` | router, slide renderer, simulation controllers, lab progress |
+| `scenes.js` | the Three.js engine and the four scenes |
+| `styles.css` | design tokens at the top |
 
 ---
 
-## Facilitation notes
+## The four 3D simulations
 
-- **Do not demo for more than 10 minutes at a time.** The sim is for them to drive; you narrate the *why*.
-- **Every lab ends in a checkpoint.** The footer counter is the only progress metric; use it to see who is stuck.
-- **The diagrams are deliberately simple** so they can be redrawn on a whiteboard from memory. That is the retention test.
-- Sessions 06–10 have no simulation on purpose: the real tooling is one command away, and a fake cloud teaches the wrong lesson.
+| Session | Scene | What you drive |
+|---|---|---|
+| 01 Git | two spheres lanes, one local one remote | commit, push (spheres travel), open PR (ring), merge (ring turns green) |
+| 02 Docker | seven stacked slabs | build (slabs appear), change source (layers 4-7 invalidate), dependency failure |
+| 02 Compose | three boxes with health rings | `compose up` - db, api, web light up only in dependency order |
+| 03 CI | six panels in perspective | run stages, arm a failing test, watch later stages stay dark |
+
+The scene is stateful per slide: slides that need a starting state declare `sim.setup`, so
+"open a PR" begins with commits already pushed.
 
 ---
 
-## What is verified
+## Program
+
+| Session | Title | Length |
+|---|---|---|
+| 00 | Orientation - the whole map | 60 min |
+| 01 | Git - the commit-to-production graph | 75 min |
+| 02 | Docker - image, layers, Dockerfile, Compose | 120 min |
+| 03 | CI - the pipeline, stage by stage | 90 min |
+| 04 | Registry - versions, digests, rollback | 60 min |
+| 05 | Security - scan the artefact you ship | 75 min |
+| 06 | Terraform - infrastructure you can review | 120 min |
+| 07 | Kubernetes - probes, rollouts, why pods die | 120 min |
+| 08 | Observability - one good alert | 90 min |
+| 09 | GitOps - git as the desired state | 90 min |
+| 10 | Capstone - one commit, end to end | half day |
+
+Sessions 04-10 are lab-first: no simulation, because the real tool is one command away.
+
+---
+
+## Editing
+
+Everything you would change lives in `content.js`. A slide looks like:
+
+```js
+{
+  kicker: "session 02 / slide 2",
+  title: "Cache is the<br>whole game",
+  lede: "...",
+  points: [["Rule", "..."], ["Symptom", "..."]],
+  viz: "docker",                       // scene shown behind the slide
+  sim: { kind: "docker", title: "...", setup: [],
+         buttons: [{ label: "build", action: "build", primary: true }] },
+  lab: [{ title, body, cmd?, expect?, checkpoint? }]
+}
+```
+
+Rendered by `app.js`; no other file needs to know.
+
+---
+
+## Verified
 
 Driven in headless Chrome against the served site, cache disabled:
 
-- 11 session cards render; 11 spine segments
-- Git sim: commit ×2 then push → 2 local + 2 remote commits, 3 log lines
-- Docker sim: 7 layers build, then changing `src/` invalidates 4
-- CI sim: 6 stages all pass, summary `PASSED`
+- 11 session cards; WebGL context live (canvas 1440x1000, `no-3d` false)
+- Git sim: two commits -> two log lines, spheres appear
+- CI sim: run -> 8 log lines, stages turn green in order
+- Docker sim: build -> slabs appear; source change invalidates the last four
+- Compose sim: up -> 7 log lines, services light in dependency order
+- Lab checkpoint persists (footer counter updates)
 - 360 px: no horizontal overflow
 - console errors: **0**
 
 ## Known limitations
 
 - Copy is English; translate `content.js` for a French session.
-- No video or slides — this is a lab-first site.
-- Lab commands assume the repository in this project; adapt the paths if you reuse it elsewhere.
+- 3D needs WebGL; the `3D` toggle and a no-WebGL fallback keep the text readable without it.
+- No video, no PDF export - it is meant to be projected and driven live.

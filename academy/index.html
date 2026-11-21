@@ -3,35 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DevOps Academy  -  hands-on workshop program</title>
-  <meta name="description" content="A multi-session DevOps curriculum: one concept per workshop, each with a simulation, real code from the project, and a lab you run yourself." />
+  <title>DevOps Academy — a 3D, hands-on program</title>
+  <meta name="description" content="An 11-session DevOps curriculum: deeper explanation slide by slide, 3D simulations you drive, and labs you run yourself. Language-agnostic." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="top">
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <header class="bar">
     <a class="brand" href="#/">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="mark" aria-hidden="true"></span>
       <span>DevOps Academy</span>
     </a>
-    <nav class="top-nav" aria-label="Sections">
-      <a href="#/" data-nav="home">Program</a>
-      <a href="#/s0" data-nav="s0">01 Orientation</a>
-      <a href="#/s1" data-nav="s1">02 Git</a>
-      <a href="#/s2" data-nav="s2">03 Docker</a>
-      <a href="#/s3" data-nav="s3">04 CI</a>
-    </nav>
-    <button class="theme-note" id="progress-reset" type="button" title="Clear lab progress">reset labs</button>
+    <div class="bar-session" id="bar-session"></div>
+    <div class="bar-right">
+      <button class="ghost" id="scenes-toggle" type="button" aria-pressed="true" title="Toggle 3D">3D</button>
+      <button class="ghost" id="reset-labs" type="button" title="Clear lab progress">reset</button>
+    </div>
   </header>
 
-  <main id="app"></main>
+  <main id="stage-area">
+    <section id="slide" aria-live="polite"></section>
+  </main>
+
+  <nav class="pager" id="pager" aria-label="Slides"></nav>
 
   <footer class="foot">
-    <span>Built from a real repository  -  Spring Boot  /  Next.js  /  PostgreSQL  /  Docker  /  GitHub Actions</span>
-    <span id="foot-progress">0 labs done</span>
+    <span id="foot-left">11 sessions · 3D simulations · language-agnostic labs</span>
+    <span id="foot-right">0 labs done</span>
   </footer>
 
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
   <script src="content.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
-
